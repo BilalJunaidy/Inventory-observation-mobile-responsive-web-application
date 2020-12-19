@@ -1,0 +1,28 @@
+{% extends "observe/layout.html" %}
+
+{% block body %}
+    <p></p>
+        <h4>Inventory listing upload instruction</h4>
+        <p>Please comply with the following requirements before submitting this form:</p>
+        <ol>
+            <li>The uploaded inventory listing should be an excel file (either an xlsx, an xlsm, xls or a csv).</li>
+            <li>Please ensure that the entirety of the inventory listing uploaded is on the first tab of the uploaded file.</li>
+            <li>The required fields for this form include:
+                <ol>
+                    <li>The row number in the uploaded file for the column headers</li>
+                    <li>The row number in the uploaded file for where the inventory listing starts</li>
+                    <li>The SKU/Product Code which helps uniquely identify the specific product</li>
+                    <li>The inventory quantity on hand of the SKU/Product code</li>
+                </ol>
+            </li>
+        </ol>
+
+        <hr>
+        <form method = 'POST' action = "{% url 'upload' %}" enctype="multipart/form-data"> 
+            {% csrf_token %}
+            {{form.as_p}}
+            <input class="btn btn-primary" type="submit" value="Upload Inventory List">
+        </form
+    
+        
+{% endblock %}
