@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ObserveConfig(AppConfig):
-    name = 'Observe'
+    name = 'observe'
