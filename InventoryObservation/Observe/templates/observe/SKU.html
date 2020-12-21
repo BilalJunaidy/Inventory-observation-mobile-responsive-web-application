@@ -1,0 +1,10 @@
+{% extends "observe/layout.html" %}
+
+{% block body %}
+<p></p>
+<form method = 'POST' action = "{% url 'SKU' inventory_list_id SKU %}"> 
+    {% csrf_token %}
+    {{form.as_p}}
+    <input class="btn btn-primary" type="submit" value="Submit Count Results">
+</form>
+{% endblock %}

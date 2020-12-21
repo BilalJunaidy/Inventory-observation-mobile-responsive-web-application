@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import InventoryListForm
+from .forms import InventoryListForm, SKUForm
 from pathlib import Path
 import os 
 from django.urls import reverse
@@ -97,5 +97,19 @@ def inventorylist(request, inventory_list_id):
             # return HttpResponse(f"This is an {file_ext} file --- {df}") 
         
         return render(request, "observe/list.html", {
-            "df": df.values.tolist()
+            "df": df.values.tolist(),
+            "inventory_list_id":inventory_list_id,
         })
+
+def SKU(request, inventory_list_id, SKU):
+    if request.method == 'POST':
+        return HttpResponse("you have just made a POST request")
+    else:
+        # return HttpResponse("you have just made a get request")
+        return render(request, "observe/SKU.html", {
+            "form": SKUForm(initial = {'sku':'bhains'}), 
+            "inventory_list_id":inventory_list_id,
+            "SKU":SKU
+        })
+
+    # return HttpResponse(f"Inventory list ID is {inventory_list_id} - Selected SKU ID is {SKU}")

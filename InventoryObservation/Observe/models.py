@@ -59,3 +59,14 @@ class InventoryList(models.Model):
     client = models.ForeignKey('Client', on_delete=models.CASCADE, related_name = 'inventorylists')
     engagement = models.ForeignKey('Engagement', on_delete=models.CASCADE, related_name = 'inventorylists')
     stockcount = models.ForeignKey('StockCount', on_delete=models.CASCADE, related_name = 'inventorylists')
+
+class SKU(models.Model):
+    sku = models.CharField(max_length=50)
+    product_name = models.CharField(max_length=150)
+    product_category = models.CharField(max_length=150)
+    product_description = models.CharField(max_length=150)
+    quantity_per_client = models.FloatField(validators=[MinValueValidator(0)])
+    value = models.FloatField(validators=[MinValueValidator(0)])
+    quantity_per_counter = models.FloatField(validators=[MinValueValidator(0)])
+    quantity_difference = models.FloatField()
+    

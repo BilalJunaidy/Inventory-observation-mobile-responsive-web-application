@@ -4,7 +4,7 @@
 <h3>The following are the list of items in your Inventory listing. Please complete the inventory count by clicking on each item and filling out the subsequent form.</h3>
 <hr>
     {% for row in df %}
-        <a href=>
+        <a href="{% url 'SKU' inventory_list_id row.0 %}">
             <div>
                 <h5>SKU: {{row.0}}</h5> 
                 <h5>Product Code: {{row.1}}</h5>
