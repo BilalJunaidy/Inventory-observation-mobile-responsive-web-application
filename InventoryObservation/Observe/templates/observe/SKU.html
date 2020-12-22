@@ -1,7 +1,40 @@
 {% extends "observe/layout.html" %}
 
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+// Select the submit button and input to be used later
+let submit = document.querySelector('#id_quantity_per_counter');
+let newTask = document.querySelector('#id_quantity_difference');
+
+
+// Disable submit button by default:
+newTask.disabled = false;
+
+// Listen for input to be typed into the input field
+submit.onkeyup = () => {
+    newTask.disabled = true;
+    if (submit.value > 0) {
+        newTask.value = submit.value * 2;
+    }
+
+document.querySelector('form').onsubmit = () => {
+    diff = document.querySelector('#id_quantity_difference');
+    diff.disabled = false;}
+
+}})
+
+</script>
+{% endblock %}
+
 {% block body %}
 <p></p>
+
+{% for key, value in record.items %}
+    <li>{{key}}: {{value}}</li>
+{% endfor %}
+
 <form method = 'POST' action = "{% url 'SKU' inventory_list_id SKU %}" enctype="multipart/form-data"> 
 
     {% csrf_token %}
@@ -11,7 +44,6 @@
         {{ hidden }}
     {% endfor %} -->
 
-    <p>Normal che</p>
     {% for field in SKUform %}
         {{ field.label_tag }} {{ field }} {{field.errors}} <br>
         <p></p>

@@ -18,8 +18,7 @@ class InventoryListForm(ModelForm):
 class SKUForm(ModelForm):
     class Meta:
         model = SKU 
-        fields = '__all__'
-        
+        exclude = ['sku', 'product_name', 'product_category', 'product_description', 'quantity_per_client', 'value']        
 
 class ImageForm(ModelForm):
     class Meta: 

@@ -69,7 +69,7 @@ class SKU(models.Model):
     value = models.FloatField(validators=[MinValueValidator(0)])
     quantity_per_counter = models.FloatField(validators=[MinValueValidator(0)])
     quantity_difference = models.FloatField()
-    comment = models.TextField()
+    comment = models.TextField(blank = True, null = True)
     # product_image_1 = models.ImageField(_('Upload Image'), upload_to='Inventory_Images_from_SKU_Model', max_length = 500)
 
 class Image(models.Model):

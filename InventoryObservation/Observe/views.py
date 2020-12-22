@@ -8,6 +8,7 @@ from django.conf import settings
 from .models import User, Enterprise, Client, Engagement, StockCount, InventoryList, Image
 import pandas as pd 
 from django.forms import modelformset_factory
+from .helpers import ReturnIndex
 
 
 # Create your views here.
@@ -89,13 +90,10 @@ def inventorylist(request, inventory_list_id):
 
         if file_ext in ['xlsm', 'xlsx']:
             df = pd.read_excel(file_path,engine='openpyxl')
-            # return HttpResponse(f"This is an {file_ext} file --- {df}")
         elif file_ext == 'xls':
             df = pd.read_excel(file_path)
-            # return HttpResponse(f"This is an {file_ext} file --- {df}")
         else:
             df = pd.read_csv(file_path)
-            # return HttpResponse(f"This is an {file_ext} file --- {df}") 
         
         return render(request, "observe/list.html", {
             "df": df.values.tolist(),
@@ -104,26 +102,55 @@ def inventorylist(request, inventory_list_id):
 
 def SKU(request, inventory_list_id, SKU):
 
-    ImageFormSet = modelformset_factory(Image, form = ImageForm, extra = 3)
+
+    Inventory_List_Object = InventoryList.objects.get(pk = inventory_list_id)
+    file_ext = Inventory_List_Object.UploadedFile.name.split('.')[-1]
+    file_path = os.path.join(settings.MEDIA_ROOT, Inventory_List_Object.UploadedFile.name)
+
+    if file_ext in ['xlsm', 'xlsx']:
+        df = pd.read_excel(file_path,engine='openpyxl')
+    elif file_ext == 'xls':
+        df = pd.read_excel(file_path)
+    else:
+        df = pd.read_csv(file_path)
+    
+    index = ReturnIndex(df, SKU)[0][0]
+    record = df.iloc[index]
+
+    SKU_record = df.iloc[index]['SKU']
+    Product_Code_record = df.iloc[index]['Product Code']
+    Product_Name_record = df.iloc[index]['Product Name']
+    Product_Description_record = df.iloc[index]['Product description']
+    Quantity_On_Hand_record = df.iloc[index]['Quantity On Hand']
+    Value_record = df.iloc[index]['Value']
+
+
+    ImageFormSet = modelformset_factory(Image, form = ImageForm, extra = 3)    
 
     if request.method == 'POST':
         skuform = SKUForm(request.POST)
         formset = ImageFormSet(request.POST, request.FILES, queryset = Image.objects.none())
-        print('we gucci till here # 1')
+        
         
         if skuform.is_valid() and formset.is_valid():
-            print('we gucci till here # 2')
-            sku_form = skuform.save()
-            print('we gucci till here # 3')
+            sku_form = skuform.save(commit = False)
+            sku_form.sku = SKU_record
+            sku_form.product_name = Product_Name_record
+            sku_form.product_category = Product_Code_record
+            sku_form.product_description = Product_Description_record
+            sku_form.quantity_per_client = Quantity_On_Hand_record
+            sku_form.value = Value_record
+            sku_form.save()
+
+
 
             for form in formset.cleaned_data:
                 if form:
                     image = form['image']
                     photo = Image(product = sku_form, image = image)
                     photo.save()
-                    print('we gucci till here # 4')
 
-            return HttpResponse("you have just made a VALID POST request")
+            return HttpResponseRedirect(reverse("inventorylist", args=(inventory_list_id,)))
 
         else:
             return render(request, "observe/SKU.html", {
@@ -133,11 +160,13 @@ def SKU(request, inventory_list_id, SKU):
             "SKU":SKU
         })
     else:
-    
+
+ 
         return render(request, "observe/SKU.html", {
             "SKUform": SKUForm(),
             "Imageform": ImageFormSet(queryset = Image.objects.none()),
             "inventory_list_id":inventory_list_id,
-            "SKU":SKU
+            "SKU":SKU,
+            "record":record
         })
 
