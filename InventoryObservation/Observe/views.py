@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import InventoryListForm, SKUForm
+from .forms import InventoryListForm, SKUForm, ImageForm
 from pathlib import Path
 import os 
 from django.urls import reverse
 from django.conf import settings
-from .models import User, Enterprise, Client, Engagement, StockCount, InventoryList 
+from .models import User, Enterprise, Client, Engagement, StockCount, InventoryList, Image
 import pandas as pd 
+from django.forms import modelformset_factory
 
 
 # Create your views here.
@@ -102,14 +103,41 @@ def inventorylist(request, inventory_list_id):
         })
 
 def SKU(request, inventory_list_id, SKU):
+
+    ImageFormSet = modelformset_factory(Image, form = ImageForm, extra = 3)
+
     if request.method == 'POST':
-        return HttpResponse("you have just made a POST request")
+        skuform = SKUForm(request.POST)
+        formset = ImageFormSet(request.POST, request.FILES, queryset = Image.objects.none())
+        print('we gucci till here # 1')
+        
+        if skuform.is_valid() and formset.is_valid():
+            print('we gucci till here # 2')
+            sku_form = skuform.save()
+            print('we gucci till here # 3')
+
+            for form in formset.cleaned_data:
+                if form:
+                    image = form['image']
+                    photo = Image(product = sku_form, image = image)
+                    photo.save()
+                    print('we gucci till here # 4')
+
+            return HttpResponse("you have just made a VALID POST request")
+
+        else:
+            return render(request, "observe/SKU.html", {
+            "SKUform": skuform,
+            "Imageform": formset,
+            "inventory_list_id":inventory_list_id,
+            "SKU":SKU
+        })
     else:
-        # return HttpResponse("you have just made a get request")
+    
         return render(request, "observe/SKU.html", {
-            "form": SKUForm(initial = {'sku':'bhains'}), 
+            "SKUform": SKUForm(),
+            "Imageform": ImageFormSet(queryset = Image.objects.none()),
             "inventory_list_id":inventory_list_id,
             "SKU":SKU
         })
 
-    # return HttpResponse(f"Inventory list ID is {inventory_list_id} - Selected SKU ID is {SKU}")

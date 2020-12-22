@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms 
-from .models import User, Enterprise, Client, Engagement, StockCount, InventoryList, SKU 
+from .models import User, Enterprise, Client, Engagement, StockCount, InventoryList, SKU, Image
 
 class InventoryListForm(ModelForm):
     class Meta:
@@ -21,4 +21,8 @@ class SKUForm(ModelForm):
         fields = '__all__'
         
 
+class ImageForm(ModelForm):
+    class Meta: 
+        model = Image 
+        exclude = ['product']
 
